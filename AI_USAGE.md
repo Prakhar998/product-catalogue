@@ -1,25 +1,31 @@
 # AI usage notes
 
-> Draft written alongside the build. **Review and edit it so it reflects your own experience before submitting**: the interview will ask about it.
-
 ## Tools and models
-- Claude Code (CLI/VS Code extension), model Claude Sonnet 5.5, for planning, scaffolding, tests and docs.
+- Claude Code (VS Code extension), model Claude Sonnet 5.5. Used for planning, scaffolding, writing code and tests, and drafting docs.
+- Everything it produced was run (typecheck, tests, build, live API calls, Docker Compose) and I am responsible for the result.
 
 ## Agent instruction files
-- [CLAUDE.md](CLAUDE.md) encodes the architecture rules (ports/adapters, API-only client, validation at the boundary, tests per change).
+- [CLAUDE.md](CLAUDE.md) is committed. It encodes the architecture rules the agent had to follow: ports/adapters in the backend, the client only calls `/api`, validation at the HTTP boundary, a test for every behaviour change, no secrets in the repo.
 
 ## Plan
-Plan agreed up front: React + Node/TS; `ProductSource` and `EmailSender` ports so data source and email provider are swappable; services hold the business rules; backend tests with in-memory fakes; Mailpit as a free local sales inbox; Docker Compose for the reviewer.
+Agreed at the start, before any code:
+- React + TypeScript client, Node + Express + TypeScript API (one language across the stack).
+- `ProductSource` and `EmailSender` interfaces so the data source and email provider can change without touching services, routes or the client (the brief says both will change).
+- Business rules (featured, category split, search) in services with no HTTP or vendor code, so they are unit-testable.
+- Backend tests use in-memory fakes, never the network. Frontend tests mock `fetch`.
+- Mailpit as a free local "sales inbox"; Docker Compose as the one-command run.
 
-## Key prompts / moments
-1. Pasting the challenge brief and asking the agent to build it: it picked the stack and the ports/adapters split from the "data source, look and feel and email provider will change" line.
-2. Deciding "top rated" is computed rather than curated (no admin exists), and recording that as an assumption.
-3. Asking for tests that use fakes rather than the network, plus a test proving the client only calls `/api`.
-4. Asking the agent to smoke test the real backend against the live Fake Store API rather than trusting unit tests alone.
+## Key prompts and moments
+1. **The brief itself.** I gave the agent the full challenge. The line "data source, look and feel and email provider are expected to change" drove the ports/adapters structure and the CSS-variable styling.
+2. **"Chosen" top rated products.** The criteria say the entrepreneur has chosen 5 products, but nothing exists to choose them. We decided to compute top rated from ratings and recorded it as an assumption in DECISIONS.md, with the swap point named (`CatalogueService.featured`).
+3. **Test approach.** Tests use fakes rather than the live Fake Store API, plus a frontend test proving the client only calls `/api/*`. Separately, the real backend was smoke-tested against the live API.
+4. **Make it a real repo.** Asked for a standalone folder, git history, a feature branch and a PR into `main`, as the brief requires.
+5. **Run it in Docker.** Docker was not installed, so Compose was initially untested. I had it installed and run end to end rather than submit something unverified.
 
-## Where the AI was wrong / what review caught
-- The frontend `vite.config.ts` used `process.env` without Node types; `tsc` caught it and the build failed until `@types/node` was added.
-- _Add your own review findings here._
+## Where the AI got things wrong, and how it was caught
+- **Missing Node types in the frontend config.** `vite.config.ts` used `process.env` without `@types/node`. `tsc` failed the build; fixed by adding the types.
+- **Docker Compose was written without being run.** It was initially flagged as untested. After installing Docker, the first frontend build failed at `npm ci`; a rebuild with no changes succeeded, which points to a transient network error rather than a code fault. Compose was then verified: app on :8080, `/api` proxied through nginx, and an enquiry email received in Mailpit.
+- **Stack traces in test output.** The email-failure test logs an expected error, which looks alarming in the output. I confirmed it is the intended path (the response is a 500 with no internal detail) and not a failing test.
 
 ## Time spent
-About 2–3 hours in total. The app was also run and checked manually after the automated tests passed.
+About 2–3 hours in total. After the automated tests passed, the app was run and checked manually.
