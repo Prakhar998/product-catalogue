@@ -22,4 +22,4 @@ Plan agreed up front: React + Node/TS; `ProductSource` and `EmailSender` ports s
 - _Add your own review findings here._
 
 ## Time spent
-_Fill in your actual time: planning / building / testing / reviewing._
+About 2–3 hours in total. The app was also run and checked manually after the automated tests passed.
