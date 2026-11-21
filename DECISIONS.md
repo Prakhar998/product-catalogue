@@ -14,7 +14,7 @@
 - No database: the catalogue is read-only and tiny. Enquiries are not stored, so a failed email is lost (the customer is told). Next step: persist before sending.
 - Rate limit is in-memory per instance (10 enquiries/minute/IP); fine for a PoC, needs a shared store behind multiple instances.
 - No pagination: the source has 20 products.
-- Docker Compose is written but was **not run** by the author (Docker was not installed on the dev machine); the non-Docker path was run end to end.
+- Docker Compose was run end to end (app on :8080, enquiry email received in Mailpit on :8025). Not run on Windows/Linux.
 - Visual design is deliberately plain, as creative work is pending.
 
 ## How the design grows

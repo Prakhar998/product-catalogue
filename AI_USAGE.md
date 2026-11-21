@@ -19,7 +19,6 @@ Plan agreed up front: React + Node/TS; `ProductSource` and `EmailSender` ports s
 
 ## Where the AI was wrong / what review caught
 - The frontend `vite.config.ts` used `process.env` without Node types; `tsc` caught it and the build failed until `@types/node` was added.
-- Docker is not installed on the dev machine, so the compose setup is untested; it is flagged in DECISIONS.md rather than claimed to work.
 - _Add your own review findings here._
 
 ## Time spent
