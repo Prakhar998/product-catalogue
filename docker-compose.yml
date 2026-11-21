@@ -1,0 +1,18 @@
+services:
+  frontend:
+    build: ./frontend
+    ports: ["8080:80"]
+    depends_on: [backend]
+
+  backend:
+    build: ./backend
+    env_file: ./backend/.env.example
+    environment:
+      SMTP_HOST: mailpit
+      CORS_ORIGINS: ""
+    depends_on: [mailpit]
+
+  # Stand-in for the sales inbox: catches every email and shows it at http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports: ["8025:8025"]
