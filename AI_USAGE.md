@@ -28,4 +28,8 @@ Agreed at the start, before any code:
 - **Stack traces in test output.** The email-failure test logs an expected error, which looks alarming in the output. I confirmed it is the intended path (the response is a 500 with no internal detail) and not a failing test.
 
 ## Time spent
-About 2–3 hours in total. After the automated tests passed, the app was run and checked manually.
+About 2–3 hours in total, roughly in this order of effort:
+1. **Planning** (most of the time): choosing the stack, the structure, and the assumptions for the gaps in the criteria.
+2. **Building**: generating and wiring up the backend and client.
+3. **Testing**: writing and running the tests, a live smoke test against the Fake Store API, and the Docker Compose run.
+4. **Reviewing**: reading the code, fixing the issues listed above, and checking the running app manually.
